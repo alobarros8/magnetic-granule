@@ -1,4 +1,4 @@
-emory Card Game Walkthrough
+Memory Card Game Walkthrough
 Changes Made
 Created 
 index.html
