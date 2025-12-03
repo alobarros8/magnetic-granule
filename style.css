@@ -62,8 +62,20 @@ body {
         grid-template-columns: repeat(4, 1fr);
         gap: 10px;
     }
-    
-    .cara-frontal, .cara-trasera {
+
+    .cara-frontal,
+    .cara-trasera {
         font-size: 2rem;
     }
+}
+
+.heart {
+    font-size: 1.5rem;
+    margin: 0 5px;
+    transition: color 0.3s ease;
+}
+
+.heart-lost {
+    color: #bdc3c7 !important;
+    /* Gray color for lost life */
 }

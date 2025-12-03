@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,10 +12,19 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body class="bg-light d-flex align-items-center justify-content-center min-vh-100">
 
     <div class="container text-center">
         <h1 class="mb-4">Juego de Memoria</h1>
+
+        <div class="lives-container mb-3">
+            <span class="fs-4 me-2">Vidas:</span>
+            <i class="fa fa-heart heart text-danger" id="heart1"></i>
+            <i class="fa fa-heart heart text-danger" id="heart2"></i>
+            <i class="fa fa-heart heart text-danger" id="heart3"></i>
+        </div>
+
         <div class="tablero-de-juego" id="game-board">
             <!-- Las cartas se generarán aquí con JavaScript -->
         </div>
@@ -26,4 +36,5 @@
     <!-- Custom JS -->
     <script src="script.js"></script>
 </body>
+
 </html>
