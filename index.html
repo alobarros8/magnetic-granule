@@ -13,22 +13,136 @@
     <link rel="stylesheet" href="style.css">
 </head>
 
-<body class="bg-light d-flex align-items-center justify-content-center min-vh-100">
+<body class="bg-light d-flex align-items-center justify-content-center min-vh-100 py-4">
 
-    <div class="container text-center">
-        <h1 class="mb-4">Juego de Memoria</h1>
+    <div class="container">
+        <h1 class="text-center mb-4 game-title">
+            <i class="fas fa-brain me-2"></i>Juego de Memoria
+        </h1>
 
-        <div class="lives-container mb-3">
-            <span class="fs-4 me-2">Vidas:</span>
+        <!-- Selector de Dificultad -->
+        <div class="difficulty-selector mb-4">
+            <h5 class="text-center mb-3">Seleccionar Nivel:</h5>
+            <div class="btn-group d-flex" role="group">
+                <button type="button" class="btn btn-outline-success difficulty-btn active" data-level="easy">
+                    <i class="fas fa-smile"></i> Fácil
+                </button>
+                <button type="button" class="btn btn-outline-warning difficulty-btn" data-level="medium">
+                    <i class="fas fa-meh"></i> Medio
+                </button>
+                <button type="button" class="btn btn-outline-danger difficulty-btn" data-level="hard">
+                    <i class="fas fa-frown"></i> Difícil
+                </button>
+                <button type="button" class="btn btn-outline-dark difficulty-btn" data-level="expert">
+                    <i class="fas fa-skull"></i> Experto
+                </button>
+            </div>
+        </div>
+
+        <!-- Panel de Estadísticas -->
+        <div class="stats-panel mb-4">
+            <div class="row g-3">
+                <div class="col-6 col-md-3">
+                    <div class="stat-card">
+                        <i class="fas fa-clock stat-icon"></i>
+                        <div class="stat-label">Tiempo</div>
+                        <div class="stat-value" id="timer">00:00</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-card">
+                        <i class="fas fa-arrows-turn-to-dots stat-icon"></i>
+                        <div class="stat-label">Movimientos</div>
+                        <div class="stat-value" id="moves">0</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-card">
+                        <i class="fas fa-star stat-icon"></i>
+                        <div class="stat-label">Puntos</div>
+                        <div class="stat-value" id="score">0</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-card">
+                        <i class="fas fa-trophy stat-icon"></i>
+                        <div class="stat-label">Mejor</div>
+                        <div class="stat-value" id="highscore">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vidas -->
+        <div class="lives-container mb-3 text-center">
+            <span class="fs-5 me-2">Vidas:</span>
             <i class="fa fa-heart heart text-danger" id="heart1"></i>
             <i class="fa fa-heart heart text-danger" id="heart2"></i>
             <i class="fa fa-heart heart text-danger" id="heart3"></i>
         </div>
 
+        <!-- Tablero de Juego -->
         <div class="tablero-de-juego" id="game-board">
             <!-- Las cartas se generarán aquí con JavaScript -->
         </div>
-        <button class="btn btn-primary mt-4" onclick="resetBoard()">Reiniciar Juego</button>
+
+        <!-- Botón Reiniciar -->
+        <div class="text-center mt-4">
+            <button class="btn btn-primary btn-lg" onclick="resetBoard()">
+                <i class="fas fa-rotate-right me-2"></i>Reiniciar Juego
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal de Victoria -->
+    <div class="modal fade" id="victoryModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content victory-modal">
+                <div class="modal-header border-0">
+                    <h3 class="modal-title w-100 text-center">
+                        <i class="fas fa-trophy text-warning me-2"></i>¡Victoria!
+                    </h3>
+                </div>
+                <div class="modal-body text-center">
+                    <div class="victory-confetti">🎉</div>
+                    <h4 class="mb-4">¡Felicitaciones!</h4>
+                    <div class="victory-stats">
+                        <div class="row">
+                            <div class="col-6 mb-3">
+                                <div class="victory-stat-item">
+                                    <i class="fas fa-clock text-primary"></i>
+                                    <div class="victory-stat-label">Tiempo</div>
+                                    <div class="victory-stat-value" id="finalTime">00:00</div>
+                                </div>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <div class="victory-stat-item">
+                                    <i class="fas fa-arrows-turn-to-dots text-info"></i>
+                                    <div class="victory-stat-label">Movimientos</div>
+                                    <div class="victory-stat-value" id="finalMoves">0</div>
+                                </div>
+                            </div>
+                            <div class="col-12 mb-3">
+                                <div class="victory-stat-item highlight">
+                                    <i class="fas fa-star text-warning"></i>
+                                    <div class="victory-stat-label">Puntuación Final</div>
+                                    <div class="victory-stat-value fs-2" id="finalScore">0</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="new-record" id="newRecord" style="display: none;">
+                            <i class="fas fa-fire text-danger"></i>
+                            ¡Nuevo Récord Personal!
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 justify-content-center">
+                    <button type="button" class="btn btn-success btn-lg" data-bs-dismiss="modal" onclick="resetBoard()">
+                        <i class="fas fa-play me-2"></i>Jugar de Nuevo
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Bootstrap JS Bundle -->
