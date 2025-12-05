@@ -1,30 +1,112 @@
 /**
- * Configuraciones de niveles de dificultad
- * @type {Object}
+ * ==============================================
+ * ICON PACKS CONFIGURATION
+ * ==============================================
  */
-const DIFFICULTY_LEVELS = {
-    easy: {
-        pairs: 4,
-        icons: ['fa-diamond', 'fa-paper-plane', 'fa-anchor', 'fa-bolt']
-    },
-    medium: {
-        pairs: 6,
-        icons: ['fa-diamond', 'fa-paper-plane', 'fa-anchor', 'fa-bolt', 'fa-cube', 'fa-leaf']
-    },
-    hard: {
-        pairs: 8,
-        icons: ['fa-diamond', 'fa-paper-plane', 'fa-anchor', 'fa-bolt', 'fa-cube', 'fa-leaf', 'fa-bicycle', 'fa-bomb']
-    },
-    expert: {
-        pairs: 10,
-        icons: ['fa-diamond', 'fa-paper-plane', 'fa-anchor', 'fa-bolt', 'fa-cube', 'fa-leaf', 'fa-bicycle', 'fa-bomb', 'fa-heart', 'fa-star']
-    }
+const ICON_PACKS = {
+    default: ['fa-diamond', 'fa-paper-plane', 'fa-anchor', 'fa-bolt', 'fa-cube', 'fa-leaf', 'fa-bicycle', 'fa-bomb', 'fa-heart', 'fa-star'],
+    animals: ['fa-dog', 'fa-cat', 'fa-fish', 'fa-crow', 'fa-horse', 'fa-dragon', 'fa-frog', 'fa-hippo', 'fa-otter', 'fa-kiwi-bird'],
+    food: ['fa-pizza-slice', 'fa-burger', 'fa-ice-cream', 'fa-cookie', 'fa-bacon', 'fa-cake-candles', 'fa-mug-hot', 'fa-lemon', 'fa-apple-whole', 'fa-carrot'],
+    sports: ['fa-basketball', 'fa-football', 'fa-table-tennis-paddle-ball', 'fa-baseball', 'fa-volleyball', 'fa-futbol', 'fa-golf-ball-tee', 'fa-bowling-ball', 'fa-hockey-puck', 'fa-dumbbell'],
+    emojis: ['😀', '🎉', '⭐', '🔥', '💎', '🌈', '🎨', '🎵', '⚡', '🌟']
 };
 
 /**
- * Variables de estado del juego
+ * ==============================================
+ * DIFFICULTY LEVELS CONFIGURATION
+ * ==============================================
+ */
+const DIFFICULTY_LEVELS = {
+    easy: { pairs: 4 },
+    medium: { pairs: 6 },
+    hard: { pairs: 8 },
+    expert: { pairs: 10 }
+};
+
+/**
+ * ==============================================
+ * SOUND MANAGER
+ * ==============================================
+ */
+class SoundManager {
+    constructor() {
+        this.audioContext = null;
+        this.muted = localStorage.getItem('soundMuted') === 'true';
+        this.initAudioContext();
+    }
+
+    initAudioContext() {
+        try {
+            this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        } catch (e) {
+            console.log('Web Audio API not supported');
+        }
+    }
+
+    playSound(type) {
+        if (this.muted || !this.audioContext) return;
+
+        const oscillator = this.audioContext.createOscillator();
+        const gainNode = this.audioContext.createGain();
+
+        oscillator.connect(gainNode);
+        gainNode.connect(this.audioContext.destination);
+
+        switch (type) {
+            case 'flip':
+                oscillator.frequency.value = 400;
+                gainNode.gain.setValueAtTime(0.1, this.audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.1);
+                oscillator.start();
+                oscillator.stop(this.audioContext.currentTime + 0.1);
+                break;
+            case 'match':
+                oscillator.frequency.value = 800;
+                gainNode.gain.setValueAtTime(0.2, this.audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.3);
+                oscillator.start();
+                oscillator.stop(this.audioContext.currentTime + 0.3);
+                break;
+            case 'fail':
+                oscillator.frequency.value = 200;
+                gainNode.gain.setValueAtTime(0.15, this.audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.2);
+                oscillator.start();
+                oscillator.stop(this.audioContext.currentTime + 0.2);
+                break;
+            case 'victory':
+                // Victory is a short melody
+                const frequencies = [523, 659, 784, 1047];
+                frequencies.forEach((freq, i) => {
+                    const osc = this.audioContext.createOscillator();
+                    const gain = this.audioContext.createGain();
+                    osc.connect(gain);
+                    gain.connect(this.audioContext.destination);
+                    osc.frequency.value = freq;
+                    gain.gain.setValueAtTime(0.1, this.audioContext.currentTime + i * 0.2);
+                    gain.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + (i + 1) * 0.2);
+                    osc.start(this.audioContext.currentTime + i * 0.2);
+                    osc.stop(this.audioContext.currentTime + (i + 1) * 0.2);
+                });
+                return; // Early return as we handle multiple notes
+        }
+    }
+
+    toggleMute() {
+        this.muted = !this.muted;
+        localStorage.setItem('soundMuted', this.muted);
+        return this.muted;
+    }
+}
+
+/**
+ * ==============================================
+ * GAME STATE VARIABLES
+ * ==============================================
  */
 let currentDifficulty = 'easy';
+let currentIconPack = 'default';
+let currentTheme = 'light';
 let cards = [];
 let hasFlippedCard = false;
 let lockBoard = false;
@@ -38,40 +120,155 @@ let timerSeconds = 0;
 let timerInterval = null;
 let gameStarted = false;
 
+// Multiplayer
+let isMultiplayer = false;
+let currentPlayer = 1;
+let player1Score = 0;
+let player2Score = 0;
+
+// Managers
+const soundManager = new SoundManager();
 const gameBoard = document.getElementById('game-board');
 
 /**
- * Inicializa el juego cuando se carga el DOM
+ * ==============================================
+ * INITIALIZATION
+ * ==============================================
  */
 document.addEventListener('DOMContentLoaded', () => {
     initializeDifficultyButtons();
-    loadHighScore();
+    initializeThemeButtons();
+    initializeIconPackButtons();
+    initializeModeButtons();
+    initializeSoundToggle();
+    loadPreferences();
     createBoard();
 });
 
 /**
- * Inicializa los botones de dificultad
+ * Initialize difficulty selector buttons
  */
 function initializeDifficultyButtons() {
     const buttons = document.querySelectorAll('.difficulty-btn');
     buttons.forEach(btn => {
         btn.addEventListener('click', () => {
-            // Remover active de todos
             buttons.forEach(b => b.classList.remove('active'));
-            // Agregar active al seleccionado
             btn.classList.add('active');
-            // Cambiar dificultad
             currentDifficulty = btn.dataset.level;
-            // Reiniciar juego
             resetBoard();
         });
     });
 }
 
 /**
- * Mezcla aleatoriamente los elementos de un array (Fisher-Yates)
- * @param {any[]} array - El array a mezclar
- * @returns {any[]} El array mezclado
+ * Initialize theme selector buttons
+ */
+function initializeThemeButtons() {
+    const buttons = document.querySelectorAll('.theme-btn');
+    buttons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            buttons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentTheme = btn.dataset.theme;
+            applyTheme(currentTheme);
+            localStorage.setItem('preferredTheme', currentTheme);
+        });
+    });
+}
+
+/**
+ * Initialize icon pack selector buttons
+ */
+function initializeIconPackButtons() {
+    const buttons = document.querySelectorAll('.iconpack-btn');
+    buttons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            buttons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentIconPack = btn.dataset.pack;
+            localStorage.setItem('preferredIconPack', currentIconPack);
+            resetBoard();
+        });
+    });
+}
+
+/**
+ * Initialize mode buttons (single/multiplayer)
+ */
+function initializeModeButtons() {
+    const buttons = document.querySelectorAll('.mode-btn');
+    const multiplayerPanel = document.getElementById('multiplayerPanel');
+
+    buttons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            buttons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            isMultiplayer = btn.dataset.mode === 'multiplayer';
+
+            if (isMultiplayer) {
+                multiplayerPanel.style.display = 'block';
+            } else {
+                multiplayerPanel.style.display = 'none';
+            }
+
+            resetBoard();
+        });
+    });
+}
+
+/**
+ * Initialize sound toggle button
+ */
+function initializeSoundToggle() {
+    const soundToggle = document.getElementById('soundToggle');
+    if (soundManager.muted) {
+        soundToggle.classList.add('muted');
+    }
+
+    soundToggle.addEventListener('click', () => {
+        const muted = soundManager.toggleMute();
+        if (muted) {
+            soundToggle.classList.add('muted');
+        } else {
+            soundToggle.classList.remove('muted');
+        }
+    });
+}
+
+/**
+ * Load saved preferences from localStorage
+ */
+function loadPreferences() {
+    const savedTheme = localStorage.getItem('preferredTheme');
+    const savedIconPack = localStorage.getItem('preferredIconPack');
+
+    if (savedTheme) {
+        currentTheme = savedTheme;
+        applyTheme(savedTheme);
+        document.querySelector(`[data-theme="${savedTheme}"]`)?.classList.add('active');
+    }
+
+    if (savedIconPack) {
+        currentIconPack = savedIconPack;
+        document.querySelector(`[data-pack="${savedIconPack}"]`)?.classList.add('active');
+    }
+}
+
+/**
+ * Apply theme to body
+ */
+function applyTheme(theme) {
+    document.body.className = `bg-light d-flex align-items-center justify-content-center min-vh-100 py-4 theme-${theme}`;
+}
+
+/**
+ * ==============================================
+ * GAME LOGIC
+ * ==============================================
+ */
+
+/**
+ * Shuffle array using Fisher-Yates algorithm
  */
 function shuffle(array) {
     let currentIndex = array.length, temporaryValue, randomIndex;
@@ -89,27 +286,23 @@ function shuffle(array) {
 }
 
 /**
- * Crea el tablero de juego basado en el nivel de dificultad actual
+ * Create game board
  */
 function createBoard() {
     gameBoard.innerHTML = '';
 
-    // Obtener configuración del nivel actual
     const config = DIFFICULTY_LEVELS[currentDifficulty];
+    const iconPack = ICON_PACKS[currentIconPack];
+    const iconsToUse = iconPack.slice(0, config.pairs);
 
-    // Crear pares de cartas
     cards = [];
-    config.icons.forEach(icon => {
+    iconsToUse.forEach(icon => {
         cards.push(icon, icon);
     });
 
-    // Mezclar cartas
     const shuffledCards = shuffle([...cards]);
-
-    // Aplicar clase de dificultad al tablero
     gameBoard.className = `tablero-de-juego ${currentDifficulty}`;
 
-    // Crear elementos HTML para cada carta
     shuffledCards.forEach(iconClass => {
         const cardElement = document.createElement('div');
         cardElement.classList.add('carta');
@@ -117,9 +310,15 @@ function createBoard() {
 
         const frontFace = document.createElement('div');
         frontFace.classList.add('cara-frontal');
-        const icon = document.createElement('i');
-        icon.classList.add('fa', iconClass);
-        frontFace.appendChild(icon);
+
+        // Handle emoji flags differently
+        if (iconClass.match(/[\u{1F1E6}-\u{1F1FF}]{2}/u)) {
+            frontFace.textContent = iconClass;
+        } else {
+            const icon = document.createElement('i');
+            icon.classList.add('fa', iconClass);
+            frontFace.appendChild(icon);
+        }
 
         const backFace = document.createElement('div');
         backFace.classList.add('cara-trasera');
@@ -136,10 +335,9 @@ function createBoard() {
 }
 
 /**
- * Maneja el evento de clic en una carta
+ * Handle card flip
  */
 function flipCard() {
-    // Iniciar cronómetro en el primer movimiento
     if (!gameStarted) {
         startTimer();
         gameStarted = true;
@@ -149,6 +347,7 @@ function flipCard() {
     if (this === firstCard) return;
     if (this.classList.contains('matched')) return;
 
+    soundManager.playSound('flip');
     this.classList.add('flip');
 
     if (!hasFlippedCard) {
@@ -164,7 +363,7 @@ function flipCard() {
 }
 
 /**
- * Comprueba si las dos cartas volteadas coinciden
+ * Check if cards match
  */
 function checkForMatch() {
     let isMatch = firstCard.dataset.icon === secondCard.dataset.icon;
@@ -172,16 +371,42 @@ function checkForMatch() {
     if (isMatch) {
         disableCards();
         matchedPairs++;
-        updateScore(100); // Puntos por acierto
+        soundManager.playSound('match');
+
+        if (isMultiplayer) {
+            if (currentPlayer === 1) {
+                player1Score += 100;
+            } else {
+                player2Score += 100;
+            }
+            updateMultiplayerUI();
+        } else {
+            updateScore(100);
+        }
+
+        // Confetti for match
+        confetti({
+            particleCount: 30,
+            spread: 60,
+            origin: { y: 0.6 }
+        });
+
         checkVictory();
     } else {
-        loseLife();
+        soundManager.playSound('fail');
+
+        if (isMultiplayer) {
+            switchPlayer();
+        } else {
+            loseLife();
+        }
+
         unflipCards();
     }
 }
 
 /**
- * Deshabilita las cartas coincidentes
+ * Disable matched cards
  */
 function disableCards() {
     firstCard.classList.add('matched');
@@ -193,7 +418,7 @@ function disableCards() {
 }
 
 /**
- * Voltea las cartas de nuevo si no coinciden
+ * Unflip cards that don't match
  */
 function unflipCards() {
     lockBoard = true;
@@ -207,12 +432,71 @@ function unflipCards() {
 }
 
 /**
- * Resta una vida al jugador
+ * Reset board state for next turn
+ */
+function resetBoardState() {
+    [hasFlippedCard, lockBoard] = [false, false];
+    [firstCard, secondCard] = [null, null];
+}
+
+/**
+ * ==============================================
+ * MULTIPLAYER LOGIC
+ * ==============================================
+ */
+
+/**
+ * Switch to other player
+ */
+function switchPlayer() {
+    currentPlayer = currentPlayer === 1 ? 2 : 1;
+    updateMultiplayerUI();
+}
+
+/**
+ * Update multiplayer UI
+ */
+function updateMultiplayerUI() {
+    document.getElementById('player1Score').textContent = `${player1Score} pts`;
+    document.getElementById('player2Score').textContent = `${player2Score} pts`;
+
+    const player1Card = document.getElementById('player1Card');
+    const player2Card = document.getElementById('player2Card');
+
+    if (currentPlayer === 1) {
+        player1Card.classList.add('active');
+        player2Card.classList.remove('active');
+        player1Card.querySelector('.turn-indicator').style.display = 'block';
+        if (player2Card.querySelector('.turn-indicator')) {
+            player2Card.querySelector('.turn-indicator').style.display = 'none';
+        }
+    } else {
+        player2Card.classList.add('active');
+        player1Card.classList.remove('active');
+        player1Card.querySelector('.turn-indicator').style.display = 'none';
+        if (!player2Card.querySelector('.turn-indicator')) {
+            const indicator = document.createElement('span');
+            indicator.className = 'turn-indicator';
+            indicator.textContent = 'Tu turno';
+            player2Card.querySelector('.player-name').appendChild(indicator);
+        }
+        player2Card.querySelector('.turn-indicator').style.display = 'block';
+    }
+}
+
+/**
+ * ==============================================
+ * SINGLE PLAYER LOGIC
+ * ==============================================
+ */
+
+/**
+ * Lose a life
  */
 function loseLife() {
     lives--;
     updateLivesUI();
-    updateScore(-20); // Penalización por error
+    updateScore(-20);
 
     if (lives === 0) {
         endGame(false);
@@ -220,7 +504,7 @@ function loseLife() {
 }
 
 /**
- * Actualiza la visualización de los corazones de vida
+ * Update lives UI
  */
 function updateLivesUI() {
     for (let i = 1; i <= 3; i++) {
@@ -236,15 +520,20 @@ function updateLivesUI() {
 }
 
 /**
- * Actualiza el contador de movimientos en la UI
+ * ==============================================
+ * UI UPDATES
+ * ==============================================
+ */
+
+/**
+ * Update moves counter
  */
 function updateMovesUI() {
     document.getElementById('moves').textContent = moves;
 }
 
 /**
- * Actualiza la puntuación
- * @param {number} points - Puntos a añadir/restar
+ * Update score
  */
 function updateScore(points) {
     score = Math.max(0, score + points);
@@ -252,22 +541,27 @@ function updateScore(points) {
 }
 
 /**
- * Inicia el cronómetro
+ * ==============================================
+ * TIMER
+ * ==============================================
+ */
+
+/**
+ * Start timer
  */
 function startTimer() {
     timerSeconds = 0;
     timerInterval = setInterval(() => {
         timerSeconds++;
         updateTimerUI();
-        // Penalización leve por tiempo cada 10 segundos
-        if (timerSeconds % 10 === 0) {
+        if (timerSeconds % 10 === 0 && !isMultiplayer) {
             updateScore(-1);
         }
     }, 1000);
 }
 
 /**
- * Detiene el cronómetro
+ * Stop timer
  */
 function stopTimer() {
     if (timerInterval) {
@@ -277,7 +571,7 @@ function stopTimer() {
 }
 
 /**
- * Actualiza la visualización del cronómetro
+ * Update timer display
  */
 function updateTimerUI() {
     const minutes = Math.floor(timerSeconds / 60);
@@ -287,9 +581,7 @@ function updateTimerUI() {
 }
 
 /**
- * Formatea el tiempo en formato MM:SS
- * @param {number} seconds - Segundos totales
- * @returns {string} Tiempo formateado
+ * Format time as MM:SS
  */
 function formatTime(seconds) {
     const minutes = Math.floor(seconds / 60);
@@ -298,15 +590,13 @@ function formatTime(seconds) {
 }
 
 /**
- * Resetea las variables de estado del tablero
+ * ==============================================
+ * VICTORY & END GAME
+ * ==============================================
  */
-function resetBoardState() {
-    [hasFlippedCard, lockBoard] = [false, false];
-    [firstCard, secondCard] = [null, null];
-}
 
 /**
- * Comprueba si el jugador ha ganado
+ * Check if player won
  */
 function checkVictory() {
     const totalPairs = DIFFICULTY_LEVELS[currentDifficulty].pairs;
@@ -316,8 +606,7 @@ function checkVictory() {
 }
 
 /**
- * Finaliza el juego
- * @param {boolean} victory - true si ganó, false si perdió
+ * End game (win or lose)
  */
 function endGame(victory) {
     stopTimer();
@@ -325,12 +614,37 @@ function endGame(victory) {
     gameStarted = false;
 
     if (victory) {
-        // Bonus por completar
-        let timeBonus = Math.max(0, 300 - timerSeconds);
-        updateScore(timeBonus);
+        soundManager.playSound('victory');
+
+        if (!isMultiplayer) {
+            let timeBonus = Math.max(0, 300 - timerSeconds);
+            updateScore(timeBonus);
+        }
 
         setTimeout(() => {
             showVictoryModal();
+            // Epic confetti celebration
+            const duration = 3 * 1000;
+            const end = Date.now() + duration;
+
+            (function frame() {
+                confetti({
+                    particleCount: 5,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 }
+                });
+                confetti({
+                    particleCount: 5,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 }
+                });
+
+                if (Date.now() < end) {
+                    requestAnimationFrame(frame);
+                }
+            }());
         }, 500);
     } else {
         setTimeout(() => {
@@ -341,34 +655,47 @@ function endGame(victory) {
 }
 
 /**
- * Muestra el modal de victoria
+ * Show victory modal
  */
 function showVictoryModal() {
-    // Actualizar estadísticas del modal
     document.getElementById('finalTime').textContent = formatTime(timerSeconds);
     document.getElementById('finalMoves').textContent = moves;
-    document.getElementById('finalScore').textContent = score;
 
-    // Verificar si es nuevo récord
-    const currentHighScore = getHighScore();
+    const victoryMessage = document.getElementById('victoryMessage');
     const newRecordDiv = document.getElementById('newRecord');
 
-    if (score > currentHighScore) {
-        saveHighScore(score);
-        loadHighScore();
-        newRecordDiv.style.display = 'block';
-    } else {
+    if (isMultiplayer) {
+        const winner = player1Score > player2Score ? 'Jugador 1' :
+            player2Score > player1Score ? 'Jugador 2' : 'Empate';
+        victoryMessage.textContent = winner === 'Empate' ? '¡Empate!' : `¡Ganó ${winner}!`;
+        document.getElementById('finalScore').textContent = `P1: ${player1Score} | P2: ${player2Score}`;
         newRecordDiv.style.display = 'none';
+    } else {
+        victoryMessage.textContent = '¡Felicitaciones!';
+        document.getElementById('finalScore').textContent = score;
+
+        const currentHighScore = getHighScore();
+        if (score > currentHighScore) {
+            saveHighScore(score);
+            loadHighScore();
+            newRecordDiv.style.display = 'block';
+        } else {
+            newRecordDiv.style.display = 'none';
+        }
     }
 
-    // Mostrar modal
     const modal = new bootstrap.Modal(document.getElementById('victoryModal'));
     modal.show();
 }
 
 /**
- * Obtiene el high score del localStorage
- * @returns {number} El high score actual
+ * ==============================================
+ * HIGH SCORE MANAGEMENT
+ * ==============================================
+ */
+
+/**
+ * Get high score from localStorage
  */
 function getHighScore() {
     const key = `highscore_${currentDifficulty}`;
@@ -376,8 +703,7 @@ function getHighScore() {
 }
 
 /**
- * Guarda el high score en localStorage
- * @param {number} newScore - Nueva puntuación a guardar
+ * Save high score to localStorage
  */
 function saveHighScore(newScore) {
     const key = `highscore_${currentDifficulty}`;
@@ -388,7 +714,7 @@ function saveHighScore(newScore) {
 }
 
 /**
- * Carga y muestra el high score
+ * Load and display high score
  */
 function loadHighScore() {
     const highScore = getHighScore();
@@ -396,21 +722,27 @@ function loadHighScore() {
 }
 
 /**
- * Reinicia el juego completo
+ * ==============================================
+ * RESET GAME
+ * ==============================================
+ */
+
+/**
+ * Reset game board
  */
 function resetBoard() {
-    // Detener cronómetro si está corriendo
     stopTimer();
 
-    // Resetear variables
     lives = 3;
     moves = 0;
     matchedPairs = 0;
     score = 0;
     timerSeconds = 0;
     gameStarted = false;
+    currentPlayer = 1;
+    player1Score = 0;
+    player2Score = 0;
 
-    // Actualizar UI
     updateLivesUI();
     updateMovesUI();
     updateScore(0);
@@ -418,6 +750,9 @@ function resetBoard() {
     loadHighScore();
     resetBoardState();
 
-    // Recrear tablero
+    if (isMultiplayer) {
+        updateMultiplayerUI();
+    }
+
     createBoard();
 }

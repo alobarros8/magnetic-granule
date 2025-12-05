@@ -1,17 +1,136 @@
+/* ===============================================
+   THEME VARIABLES
+   =============================================== */
+:root {
+    --bg-gradient-start: #667eea;
+    --bg-gradient-end: #764ba2;
+    --primary-color: #f093fb;
+    --secondary-color: #f5576c;
+    --text-light: #fff;
+    --card-bg-start: #2c3e50;
+    --card-bg-end: #34495e;
+    --card-back-start: #ecf0f1;
+    --card-back-end: #bdc3c7;
+}
+
+/* Dark Theme */
+body.theme-dark {
+    --bg-gradient-start: #1a1a2e;
+    --bg-gradient-end: #16213e;
+    --primary-color: #0f3460;
+    --secondary-color: #e94560;
+    --card-bg-start: #0f3460;
+    --card-bg-end: #16213e;
+    --card-back-start: #1a1a2e;
+    --card-back-end: #0f3460;
+}
+
+/* Neon Theme */
+body.theme-neon {
+    --bg-gradient-start: #000000;
+    --bg-gradient-end: #1a0033;
+    --primary-color: #ff00ff;
+    --secondary-color: #00ffff;
+    --card-bg-start: #1a0033;
+    --card-bg-end: #330066;
+    --card-back-start: #0d0d0d;
+    --card-back-end: #1a0033;
+}
+
+/* Nature Theme */
+body.theme-nature {
+    --bg-gradient-start: #56ab2f;
+    --bg-gradient-end: #a8e063;
+    --primary-color: #2e7d32;
+    --secondary-color: #558b2f;
+    --card-bg-start: #1b5e20;
+    --card-bg-end: #2e7d32;
+    --card-back-start: #c5e1a5;
+    --card-back-end: #81c784;
+}
+
+/* ===============================================
+   BASE STYLES
+   =============================================== */
 body {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    transition: background 0.5s ease;
 }
 
 .game-title {
-    color: #fff;
+    color: var(--text-light);
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
     font-weight: bold;
 }
 
-/* Difficulty Selector */
+#soundToggle,
+#settingsToggle {
+    transition: all 0.3s ease;
+}
+
+#soundToggle:hover {
+    transform: scale(1.1);
+}
+
+#settingsToggle:hover {
+    transform: rotate(90deg) scale(1.1);
+}
+
+#soundToggle.muted .fa-volume-up::before {
+    content: "\f026";
+}
+
+/* ===============================================
+   MULTIPLAYER PANEL
+   =============================================== */
+.multiplayer-panel {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 15px;
+}
+
+.player-card {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+    padding: 15px;
+    text-align: center;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.player-card.active {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: var(--text-light);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+}
+
+.player-name {
+    color: var(--text-light);
+    font-weight: 600;
+    margin-bottom: 8px;
+    font-size: 1rem;
+}
+
+.turn-indicator {
+    display: block;
+    font-size: 0.75rem;
+    color: #ffd700;
+    font-weight: bold;
+    margin-top: 3px;
+}
+
+.player-score {
+    color: var(--text-light);
+    font-size: 1.3rem;
+    font-weight: bold;
+}
+
+/* ===============================================
+   DIFFICULTY SELECTOR
+   =============================================== */
 .difficulty-selector h5 {
-    color: #fff;
+    color: var(--text-light);
     font-weight: 600;
 }
 
@@ -30,7 +149,9 @@ body {
     transform: translateY(-2px);
 }
 
-/* Stats Panel */
+/* ===============================================
+   STATS PANEL
+   =============================================== */
 .stats-panel {
     background: rgba(255, 255, 255, 0.95);
     border-radius: 15px;
@@ -39,7 +160,7 @@ body {
 }
 
 .stat-card {
-    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
     border-radius: 12px;
     padding: 15px;
     text-align: center;
@@ -53,7 +174,7 @@ body {
 
 .stat-icon {
     font-size: 1.8rem;
-    color: #fff;
+    color: var(--text-light);
     margin-bottom: 8px;
 }
 
@@ -67,10 +188,12 @@ body {
 .stat-value {
     font-size: 1.5rem;
     font-weight: bold;
-    color: #fff;
+    color: var(--text-light);
 }
 
-/* Lives Container */
+/* ===============================================
+   LIVES CONTAINER
+   =============================================== */
 .lives-container {
     background: rgba(255, 255, 255, 0.15);
     padding: 10px 20px;
@@ -79,7 +202,7 @@ body {
 }
 
 .lives-container span {
-    color: #fff;
+    color: var(--text-light);
     font-weight: 600;
 }
 
@@ -108,7 +231,9 @@ body {
     opacity: 0.4;
 }
 
-/* Game Board */
+/* ===============================================
+   GAME BOARD
+   =============================================== */
 .tablero-de-juego {
     display: grid;
     gap: 15px;
@@ -117,7 +242,6 @@ body {
     perspective: 1000px;
 }
 
-/* Dynamic grid based on difficulty */
 .tablero-de-juego.easy {
     grid-template-columns: repeat(4, 1fr);
     max-width: 600px;
@@ -138,7 +262,9 @@ body {
     max-width: 900px;
 }
 
-/* Cards */
+/* ===============================================
+   CARDS
+   =============================================== */
 .carta {
     width: 100%;
     aspect-ratio: 1 / 1;
@@ -176,22 +302,70 @@ body {
 }
 
 .cara-frontal {
-    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    background: linear-gradient(135deg, var(--card-bg-start) 0%, var(--card-bg-end) 100%);
     transform: rotateY(180deg);
     font-size: 3rem;
     color: #f39c12;
 }
 
 .cara-trasera {
-    background: linear-gradient(135deg, #ecf0f1 0%, #bdc3c7 100%);
+    background: linear-gradient(135deg, var(--card-back-start) 0%, var(--card-back-end) 100%);
     color: #2c3e50;
     font-size: 3rem;
 }
 
-/* Victory Modal */
+/* ===============================================
+   SETTINGS MODAL
+   =============================================== */
+.settings-modal {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    color: var(--text-light);
+    border: none;
+    border-radius: 15px;
+}
+
+.settings-modal .modal-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.settings-modal .modal-footer {
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.settings-section {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 15px;
+    border-radius: 10px;
+}
+
+.settings-title {
+    margin-bottom: 12px;
+    font-weight: 600;
+    color: var(--text-light);
+}
+
+.settings-modal .mode-btn,
+.settings-modal .theme-btn,
+.settings-modal .iconpack-btn {
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border-width: 2px;
+}
+
+.settings-modal .mode-btn.active,
+.settings-modal .theme-btn.active,
+.settings-modal .iconpack-btn.active {
+    background: var(--text-light);
+    color: var(--bg-gradient-start);
+    border-color: var(--text-light);
+}
+
+/* ===============================================
+   VICTORY MODAL
+   =============================================== */
 .victory-modal {
-    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-    color: #fff;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    color: var(--text-light);
     border: none;
     border-radius: 20px;
 }
@@ -262,7 +436,9 @@ body {
     }
 }
 
-/* Responsive adjustments */
+/* ===============================================
+   RESPONSIVE DESIGN
+   =============================================== */
 @media (max-width: 768px) {
     .tablero-de-juego {
         gap: 10px;
@@ -294,7 +470,7 @@ body {
     }
 
     .difficulty-btn {
-        font-size: 0.85rem;
+        font-size: 0.75rem;
         padding: 8px 10px;
     }
 }

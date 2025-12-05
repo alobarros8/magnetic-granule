@@ -18,7 +18,37 @@
     <div class="container">
         <h1 class="text-center mb-4 game-title">
             <i class="fas fa-brain me-2"></i>Juego de Memoria
+            <button id="soundToggle" class="btn btn-sm btn-outline-light ms-2" title="Activar/Desactivar Sonido">
+                <i class="fas fa-volume-up"></i>
+            </button>
+            <button id="settingsToggle" class="btn btn-sm btn-outline-light ms-2" title="Configuración"
+                data-bs-toggle="modal" data-bs-target="#settingsModal">
+                <i class="fas fa-cog"></i>
+            </button>
         </h1>
+
+        <!-- Panel de Multijugador (oculto por defecto) -->
+        <div id="multiplayerPanel" class="multiplayer-panel mb-3" style="display: none;">
+            <div class="row g-2">
+                <div class="col-6">
+                    <div class="player-card active" id="player1Card">
+                        <div class="player-name">
+                            <i class="fas fa-user-circle"></i> Jugador 1
+                            <span class="turn-indicator">Tu turno</span>
+                        </div>
+                        <div class="player-score" id="player1Score">0 pts</div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="player-card" id="player2Card">
+                        <div class="player-name">
+                            <i class="fas fa-user-circle"></i> Jugador 2
+                        </div>
+                        <div class="player-score" id="player2Score">0 pts</div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- Selector de Dificultad -->
         <div class="difficulty-selector mb-4">
@@ -94,6 +124,110 @@
         </div>
     </div>
 
+    <!-- Modal de Configuración -->
+    <div class="modal fade" id="settingsModal" tabindex="-1" aria-labelledby="settingsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content settings-modal">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="settingsModalLabel">
+                        <i class="fas fa-cog me-2"></i>Configuración
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Selector de Modo de Juego -->
+                    <div class="settings-section mb-4">
+                        <h6 class="settings-title">
+                            <i class="fas fa-gamepad me-2"></i>Modo de Juego
+                        </h6>
+                        <div class="btn-group d-flex" role="group">
+                            <button type="button" class="btn btn-outline-light mode-btn active" data-mode="single">
+                                <i class="fas fa-user"></i> Un Jugador
+                            </button>
+                            <button type="button" class="btn btn-outline-light mode-btn" data-mode="multiplayer">
+                                <i class="fas fa-users"></i> Dos Jugadores
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Selector de Tema -->
+                    <div class="settings-section mb-4">
+                        <h6 class="settings-title">
+                            <i class="fas fa-palette me-2"></i>Tema Visual
+                        </h6>
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <button type="button" class="btn btn-outline-light theme-btn w-100 active"
+                                    data-theme="light">
+                                    <i class="fas fa-sun"></i> Claro
+                                </button>
+                            </div>
+                            <div class="col-6">
+                                <button type="button" class="btn btn-outline-light theme-btn w-100" data-theme="dark">
+                                    <i class="fas fa-moon"></i> Oscuro
+                                </button>
+                            </div>
+                            <div class="col-6">
+                                <button type="button" class="btn btn-outline-light theme-btn w-100" data-theme="neon">
+                                    <i class="fas fa-bolt"></i> Neón
+                                </button>
+                            </div>
+                            <div class="col-6">
+                                <button type="button" class="btn btn-outline-light theme-btn w-100" data-theme="nature">
+                                    <i class="fas fa-leaf"></i> Naturaleza
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Selector de Pack de Iconos -->
+                    <div class="settings-section">
+                        <h6 class="settings-title">
+                            <i class="fas fa-icons me-2"></i>Pack de Iconos
+                        </h6>
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <button type="button" class="btn btn-outline-light iconpack-btn w-100 active"
+                                    data-pack="default">
+                                    <i class="fas fa-shapes"></i> Default
+                                </button>
+                            </div>
+                            <div class="col-6">
+                                <button type="button" class="btn btn-outline-light iconpack-btn w-100"
+                                    data-pack="animals">
+                                    <i class="fas fa-paw"></i> Animales
+                                </button>
+                            </div>
+                            <div class="col-6">
+                                <button type="button" class="btn btn-outline-light iconpack-btn w-100" data-pack="food">
+                                    <i class="fas fa-utensils"></i> Comida
+                                </button>
+                            </div>
+                            <div class="col-6">
+                                <button type="button" class="btn btn-outline-light iconpack-btn w-100"
+                                    data-pack="sports">
+                                    <i class="fas fa-basketball"></i> Deportes
+                                </button>
+                            </div>
+                            <div class="col-6">
+                                <button type="button" class="btn btn-outline-light iconpack-btn w-100"
+                                    data-pack="emojis">
+                                    <i class="fas fa-smile"></i> Emojis
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                        <i class="fas fa-check me-2"></i>Aplicar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal de Victoria -->
     <div class="modal fade" id="victoryModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -105,7 +239,7 @@
                 </div>
                 <div class="modal-body text-center">
                     <div class="victory-confetti">🎉</div>
-                    <h4 class="mb-4">¡Felicitaciones!</h4>
+                    <h4 class="mb-4" id="victoryMessage">¡Felicitaciones!</h4>
                     <div class="victory-stats">
                         <div class="row">
                             <div class="col-6 mb-3">
@@ -145,6 +279,8 @@
         </div>
     </div>
 
+    <!-- Canvas Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
     <!-- Bootstrap JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Custom JS -->
