@@ -85,7 +85,7 @@ body {
    MULTIPLAYER PANEL
    =============================================== */
 .multiplayer-panel {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0. 1);
     border-radius: 12px;
     padding: 15px;
 }
@@ -434,6 +434,226 @@ body {
     50% {
         transform: scale(1.05);
     }
+}
+
+/* ===============================================
+   LEVEL 1 FEATURES - HINTS
+   =============================================== */
+#hintBtn {
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+#hintBtn.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+#hintBtn:not(.disabled):hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.hint-flash {
+    animation: hint-flash-anim 1.5s;
+}
+
+@keyframes hint-flash-anim {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.3;
+        box-shadow: 0 0 30px gold;
+    }
+}
+
+.shake {
+    animation: shake-anim 0.5s;
+}
+
+@keyframes shake-anim {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(-10px);
+    }
+
+    75% {
+        transform: translateX(10px);
+    }
+}
+
+/* ===============================================
+   LEVEL 1 FEATURES - LEADERBOARD
+   =============================================== */
+.leaderboard-modal,
+.stats-modal,
+.name-modal {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    color: var(--text-light);
+    border: none;
+    border-radius: 15px;
+}
+
+.leaderboard-modal .modal-header,
+.stats-modal .modal-header,
+.name-modal .modal-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.leaderboard-modal .nav-tabs {
+    border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.leaderboard-modal .nav-link {
+    color: rgba(255, 255, 255, 0.7);
+    border: none;
+    padding: 10px 20px;
+    transition: all 0.3s ease;
+}
+
+.leaderboard-modal .nav-link:hover {
+    color: var(--text-light);
+}
+
+.leaderboard-modal .nav-link.active {
+    color: var(--text-light);
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 8px 8px 0 0;
+}
+
+.leaderboard-table {
+    color: var(--text-light);
+    margin: 0;
+}
+
+.leaderboard-table td {
+    padding: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    vertical-align: middle;
+}
+
+.leaderboard-table tr:last-child td {
+    border-bottom: none;
+}
+
+.leaderboard-table tr.top-rank {
+    background: rgba(255, 215, 0, 0.2);
+    font-weight: bold;
+}
+
+.leaderboard-table tr:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.rank-cell {
+    width: 60px;
+    font-size: 1.5rem;
+    text-align: center;
+}
+
+.name-cell {
+    font-weight: 600;
+}
+
+.score-cell {
+    width: 100px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-align: center;
+}
+
+.time-cell {
+    width: 80px;
+    text-align: right;
+    opacity: 0.8;
+}
+
+/* ===============================================
+   LEVEL 1 FEATURES - STATISTICS
+   =============================================== */
+.stats-summary {
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}
+
+.stat-box {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.stat-box:hover {
+    transform: translateY(-5px);
+    background: rgba(255, 255, 255, 0.25);
+}
+
+.stat-box .stat-icon {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    opacity: 0.9;
+}
+
+.stat-box .stat-number {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.stat-box .stat-label {
+    font-size: 0.9rem;
+    opacity: 0.8;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.difficulty-stats {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.difficulty-stats h6 {
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+/* ===============================================
+   LEVEL 1 FEATURES - NAME MODAL
+   =============================================== */
+.name-modal .form-control {
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    color: var(--text-light);
+    font-size: 1.1rem;
+    padding: 12px;
+}
+
+.name-modal .form-control:focus {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: var(--text-light);
+    color: var(--text-light);
+    box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.25);
+}
+
+.name-modal .form-control::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.name-modal .form-label {
+    font-weight: 600;
+    margin-bottom: 8px;
 }
 
 /* ===============================================

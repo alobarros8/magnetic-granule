@@ -116,10 +116,20 @@
             <!-- Las cartas se generarán aquí con JavaScript -->
         </div>
 
-        <!-- Botón Reiniciar -->
+        <!-- Botones de Acción -->
         <div class="text-center mt-4">
-            <button class="btn btn-primary btn-lg" onclick="resetBoard()">
-                <i class="fas fa-rotate-right me-2"></i>Reiniciar Juego
+            <button id="hintBtn" class="btn btn-warning btn-lg me-2" title="Usar pista (-50 puntos)">
+                <i class="fas fa-lightbulb me-2"></i>Pista
+                <span class="badge bg-light text-warning ms-2" id="hintCount">3</span>
+            </button>
+            <button class="btn btn-primary btn-lg me-2" onclick="resetBoard()">
+                <i class="fas fa-rotate-right me-2"></i>Reiniciar
+            </button>
+            <button class="btn btn-info btn-lg me-2" data-bs-toggle="modal" data-bs-target="#leaderboardModal">
+                <i class="fas fa-trophy me-2"></i>Líderes
+            </button>
+            <button class="btn btn-success btn-lg" data-bs-toggle="modal" data-bs-target="#statsModal">
+                <i class="fas fa-chart-line me-2"></i>Estadísticas
             </button>
         </div>
     </div>
@@ -222,6 +232,100 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-light" data-bs-dismiss="modal">
                         <i class="fas fa-check me-2"></i>Aplicar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Tabla de Líderes -->
+    <div class="modal fade" id="leaderboardModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content leaderboard-modal">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-trophy me-2"></i>Tabla de Líderes
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Tabs por dificultad -->
+                    <ul class="nav nav-tabs mb-3" id="leaderboardTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="easy-tab" data-bs-toggle="tab"
+                                data-bs-target="#easy-leaderboard" type="button">Fácil</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="medium-tab" data-bs-toggle="tab"
+                                data-bs-target="#medium-leaderboard" type="button">Medio</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="hard-tab" data-bs-toggle="tab"
+                                data-bs-target="#hard-leaderboard" type="button">Difícil</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="expert-tab" data-bs-toggle="tab"
+                                data-bs-target="#expert-leaderboard" type="button">Experto</button>
+                        </li>
+                    </ul>
+
+                    <!-- Tab content -->
+                    <div class="tab-content" id="leaderboardTabContent">
+                        <div class="tab-pane fade show active" id="easy-leaderboard"></div>
+                        <div class="tab-pane fade" id="medium-leaderboard"></div>
+                        <div class="tab-pane fade" id="hard-leaderboard"></div>
+                        <div class="tab-pane fade" id="expert-leaderboard"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Estadísticas -->
+    <div class="modal fade" id="statsModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content stats-modal">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-chart-line me-2"></i>Estadísticas
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="statsContent">
+                    <!-- Se llenará con JavaScript -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger"
+                        onclick="if(confirm('¿Resetear todas las estadísticas?')) resetStats()">
+                        <i class="fas fa-trash me-2"></i>Resetear Stats
+                    </button>
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Entrada de Nombre -->
+    <div class="modal fade" id="nameModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content name-modal">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-star me-2"></i>¡Nuevo Récord!
+                    </h5>
+                </div>
+                <div class="modal-body">
+                    <p class="text-center mb-3">¡Felicitaciones! Has entrado al Top 10.</p>
+                    <div class="mb-3">
+                        <label for="playerName" class="form-label">Ingresa tu nombre:</label>
+                        <input type="text" class="form-control" id="playerName" maxlength="20" placeholder="Tu nombre">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" onclick="savePlayerName()">
+                        <i class="fas fa-check me-2"></i>Guardar
                     </button>
                 </div>
             </div>
