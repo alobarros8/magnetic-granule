@@ -8,7 +8,7 @@ const ICON_PACKS = {
     animals: ['fa-dog', 'fa-cat', 'fa-fish', 'fa-crow', 'fa-horse', 'fa-dragon', 'fa-frog', 'fa-hippo', 'fa-otter', 'fa-kiwi-bird'],
     food: ['fa-pizza-slice', 'fa-burger', 'fa-ice-cream', 'fa-cookie', 'fa-bacon', 'fa-cake-candles', 'fa-mug-hot', 'fa-lemon', 'fa-apple-whole', 'fa-carrot'],
     sports: ['fa-basketball', 'fa-football', 'fa-table-tennis-paddle-ball', 'fa-baseball', 'fa-volleyball', 'fa-futbol', 'fa-golf-ball-tee', 'fa-bowling-ball', 'fa-hockey-puck', 'fa-dumbbell'],
-    emojis: ['😀', '🎉', '⭐', '🔥', '💎', '🌈', '🎨', '🎵', '⚡', '🌟']
+    emojis: ['fa-face-frown', 'fa-face-smile', 'fa-face-neutral', 'fa-face-surprise', 'fa-face-angry', 'fa-face-astonished', 'fa-face-grimace', 'fa-face-rolling-eyes', 'fa-face-sad-cry', 'fa-face-astonished']
 };
 
 /**
